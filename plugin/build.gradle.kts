@@ -68,7 +68,13 @@ publishing {
         }
     }
     repositories {
-        maven(url = "https://jitpack.io")
+        maven {
+            url = uri("https://jitpack.io")
+            credentials {
+                username = System.getenv("USERNAME")
+                password = System.getenv("PASSWORD")
+            }
+        }
     }
 }
 
