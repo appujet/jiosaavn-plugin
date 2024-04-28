@@ -83,7 +83,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
 
     @Override
     public AudioTrack decodeTrack(AudioTrackInfo audioTrackInfo, DataInput dataInput) {
-        return new JioSaavanAudioTrack(audioTrackInfo, this);
+        return new JioSaavnAudioTrack(audioTrackInfo, this);
     }
 
     private AudioItem getSearchResult(String query) throws IOException {
@@ -123,7 +123,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
         if (data.get("songs").isNull()) {
             return AudioReference.NO_TRACK;
         }
-        return new JioSaavanAudioPlaylist(
+        return new JioSaavnAudioPlaylist(
                 data.get("name").text(),
                 this.buildTracks(data.get("songs")),
                 ExtendedAudioPlaylist.Type.ALBUM,
@@ -144,7 +144,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
         if (data.get("songs").isNull()) {
             return AudioReference.NO_TRACK;
         }
-        return new JioSaavanAudioPlaylist(
+        return new JioSaavnAudioPlaylist(
                 data.get("name").text(),
                 this.buildTracks(data.get("songs")),
                 ExtendedAudioPlaylist.Type.PLAYLIST,
@@ -165,7 +165,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
         if (data.get("topSongs").isNull()) {
             return AudioReference.NO_TRACK;
         }
-        return new JioSaavanAudioPlaylist(
+        return new JioSaavnAudioPlaylist(
                 data.get("name").text(),
                 this.buildTracks(data.get("topSongs")),
                 ExtendedAudioPlaylist.Type.ARTIST,
@@ -189,7 +189,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
 
         var tracks = this.buildTracks(data);
 
-        return new JioSaavanAudioPlaylist(
+        return new JioSaavnAudioPlaylist(
                 "Recommendations",
                 tracks,
                 ExtendedAudioPlaylist.Type.RECOMMENDATIONS,
@@ -231,7 +231,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
         final long duration = data.get("duration").asLong(1) * 1000;
         final String url = data.get("url").text();
         var artist = cleanString(this.parseArtist(data));
-        return new JioSaavanAudioTrack(
+        return new JioSaavnAudioTrack(
                 new AudioTrackInfo(
                         title,
                         artist,
