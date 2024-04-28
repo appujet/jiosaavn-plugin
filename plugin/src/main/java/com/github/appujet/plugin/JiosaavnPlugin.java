@@ -10,13 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JiosaavanPlugin implements AudioPlayerManagerConfiguration {
-    private static final Logger log = LoggerFactory.getLogger(JiosaavanPlugin.class);
+public class JiosaavnPlugin implements AudioPlayerManagerConfiguration {
+    private static final Logger log = LoggerFactory.getLogger(JiosaavnPlugin.class);
 
-    private final JioSaavanConfig sourcesConfig;
+    private final JioSaavnConfig sourcesConfig;
     private JioSaavnAudioSourceManager jioSaavn;
 
-    public JiosaavanPlugin(JioSaavanConfig sourcesConfig) {
+    public JiosaavnPlugin(JioSaavnConfig sourcesConfig) {
         log.info("Loaded JioSaavn plugin...");
         this.sourcesConfig = sourcesConfig;
         if (this.sourcesConfig.getApiURL() != null) {

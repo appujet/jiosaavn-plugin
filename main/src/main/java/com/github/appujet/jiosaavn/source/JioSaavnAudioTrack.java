@@ -9,10 +9,10 @@ import com.sedmelluq.discord.lavaplayer.tools.Units;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 
-public class JioSaavanAudioTrack extends ExtendedAudioTrack {
+public class JioSaavnAudioTrack extends ExtendedAudioTrack {
     private final ExtendedAudioSourceManager manager;
 
-    public JioSaavanAudioTrack(AudioTrackInfo trackInfo, ExtendedAudioSourceManager manager) {
+    public JioSaavnAudioTrack(AudioTrackInfo trackInfo, ExtendedAudioSourceManager manager) {
         super(trackInfo, manager);
         this.manager = manager;
     }
