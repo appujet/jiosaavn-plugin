@@ -26,6 +26,8 @@ jobs:
         run: chmod +x ./gradlew
         env:
           CI: true
+      - name: Check Gradle wrapper permissions and existence
+        run: ls -l ./gradlew && file ./gradlew
 
       - name: Run Gradle dependencies
         run: ./gradlew --no-daemon dependencies
