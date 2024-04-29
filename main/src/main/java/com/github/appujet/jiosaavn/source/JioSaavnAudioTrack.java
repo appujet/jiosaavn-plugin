@@ -6,6 +6,7 @@ import com.github.appujet.jiosaavn.ExtendedAudioSourceManager;
 import com.github.appujet.jiosaavn.ExtendedAudioTrack;
 import com.github.appujet.jiosaavn.Utils;
 import com.sedmelluq.discord.lavaplayer.tools.Units;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 
@@ -62,5 +63,10 @@ public class JioSaavnAudioTrack extends ExtendedAudioTrack {
     @Override
     protected long getTrackDuration() {
         return Units.CONTENT_LENGTH_UNKNOWN;
+    }
+
+    @Override
+    protected AudioTrack makeShallowClone() {
+        return new JioSaavnAudioTrack(this.trackInfo, manager);
     }
 }
