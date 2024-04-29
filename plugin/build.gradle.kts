@@ -62,17 +62,19 @@ data class Version(val major: Int, val minor: Int, val patch: Int) {
 
 
 publishing {
-    publications {
-        create<MavenPublication>("jitpack") {
-            from(components["java"])
-        }
-    }
     repositories {
         maven {
-            url = uri("https://jitpack.io")
+            url = if (preRelease) {
+                uri("https://maven.lavalink.dev/snapshots")
+            } else {
+                uri("https://maven.lavalink.dev/releases")
+            }
             credentials {
                 username = System.getenv("USERNAME")
                 password = System.getenv("PASSWORD")
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
             }
         }
     }
@@ -81,7 +83,7 @@ publishing {
 githubRelease {
     token(System.getenv("GITHUB_TOKEN"))
     owner("appujet")
-    repo("jiosaavan-plugin")
+    repo("jiosaavn-plugin")
     targetCommitish(System.getenv("RELEASE_TARGET"))
     releaseAssets(tasks.shadowJar.get().outputs.files.toList())
     tagName(verName)
@@ -95,7 +97,7 @@ githubRelease {
             |```yml
             |lavalink:
             |    plugins:
-            |        - dependency: "com.github.appujet:jiosaavan-plugin:$verName"
+            |        - dependency: "com.github.appujet:jiosaavn-plugin:$verName"
             |          repository: https://jitpack.io
             |```
         """.trimMargin())
