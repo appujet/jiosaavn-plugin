@@ -14,6 +14,7 @@ val archivesBaseName = "jiosaavn-plugin"
 val preRelease = System.getenv("PRERELEASE") == "true"
 val verName = "${if (preRelease) "PRE_" else ""}$pluginVersion${if(preRelease) "_${System.getenv("GITHUB_RUN_NUMBER")}" else ""}"
 
+
 lavalinkPlugin {
     name = "jiosaavn-plugin"
     path = "$group.plugin"
@@ -22,6 +23,7 @@ lavalinkPlugin {
     apiVersion = libs.versions.lavalink.api
     serverVersion = libs.versions.lavalink.server
 }
+
 
 dependencies {
     implementation(projects.main)

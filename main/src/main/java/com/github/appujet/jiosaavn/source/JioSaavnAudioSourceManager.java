@@ -78,7 +78,22 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
 
     @Override
     public void encodeTrack(AudioTrack audioTrack, DataOutput dataOutput) {
-
+// No need for encoding, just pass the track info without serialization
+        JioSaavnAudioTrack jioSaavnAudioTrack = (JioSaavnAudioTrack) audioTrack;
+        AudioTrackInfo trackInfo = jioSaavnAudioTrack.getInfo();
+        try {
+            // Write track info properties individually
+            dataOutput.writeUTF(trackInfo.title);
+            dataOutput.writeUTF(trackInfo.author);
+            dataOutput.writeLong(trackInfo.length);
+            dataOutput.writeUTF(trackInfo.identifier);
+            dataOutput.writeBoolean(trackInfo.isStream);
+            dataOutput.writeUTF(trackInfo.uri);
+            dataOutput.writeUTF(trackInfo.artworkUrl);
+            // If there are additional properties, write them here
+        } catch (IOException e) {
+            throw new RuntimeException("Error encoding track", e);
+        }
     }
 
     @Override

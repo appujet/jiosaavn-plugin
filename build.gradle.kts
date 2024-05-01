@@ -4,7 +4,10 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
     id("com.github.breadmoirai.github-release") version "2.4.1" apply false
 }
-
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
