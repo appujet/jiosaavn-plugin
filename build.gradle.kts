@@ -42,3 +42,6 @@ subprojects {
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
+dependencies {
+    implementation(kotlin("script-runtime"))
+}

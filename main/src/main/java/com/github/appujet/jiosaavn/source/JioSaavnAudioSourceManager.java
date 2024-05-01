@@ -3,6 +3,7 @@ package com.github.appujet.jiosaavn.source;
 import com.github.appujet.jiosaavn.ExtendedAudioPlaylist;
 import com.github.appujet.jiosaavn.ExtendedAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools;
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
@@ -77,23 +78,9 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     @Override
-    public void encodeTrack(AudioTrack audioTrack, DataOutput dataOutput) {
-// No need for encoding, just pass the track info without serialization
+    public void encodeTrack(AudioTrack audioTrack, DataOutput dataOutput) throws IOException {
         JioSaavnAudioTrack jioSaavnAudioTrack = (JioSaavnAudioTrack) audioTrack;
-        AudioTrackInfo trackInfo = jioSaavnAudioTrack.getInfo();
-        try {
-            // Write track info properties individually
-            dataOutput.writeUTF(trackInfo.title);
-            dataOutput.writeUTF(trackInfo.author);
-            dataOutput.writeLong(trackInfo.length);
-            dataOutput.writeUTF(trackInfo.identifier);
-            dataOutput.writeBoolean(trackInfo.isStream);
-            dataOutput.writeUTF(trackInfo.uri);
-            dataOutput.writeUTF(trackInfo.artworkUrl);
-            // If there are additional properties, write them here
-        } catch (IOException e) {
-            throw new RuntimeException("Error encoding track", e);
-        }
+        DataFormatTools.writeNullableText(dataOutput, jioSaavnAudioTrack.getInfo().identifier);
     }
 
     @Override
