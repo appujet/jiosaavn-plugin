@@ -37,7 +37,7 @@ public class ExtendedAudioTrack extends DelegatedAudioTrack {
 
     protected void loadStream(LocalAudioTrackExecutor localExecutor, HttpInterface httpInterface) throws Exception {
         final String trackUrl = getPlaybackUrl();
-        try (PersistentHttpStream stream = new PersistentHttpStream(httpInterface, new URI(trackUrl), this.getTrackDuration())) {
+        try (PersistentHttpStream stream = new PersistentHttpStream(httpInterface, new URI(trackUrl), Long.MAX_VALUE)) {
             processDelegate(createAudioTrack(this.trackInfo, stream), localExecutor);
         }
     }

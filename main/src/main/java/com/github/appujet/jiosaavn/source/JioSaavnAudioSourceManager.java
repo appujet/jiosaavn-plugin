@@ -79,8 +79,6 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
 
     @Override
     public void encodeTrack(AudioTrack audioTrack, DataOutput dataOutput) throws IOException {
-        JioSaavnAudioTrack jioSaavnAudioTrack = (JioSaavnAudioTrack) audioTrack;
-        DataFormatTools.writeNullableText(dataOutput, jioSaavnAudioTrack.getInfo().identifier);
     }
 
     @Override

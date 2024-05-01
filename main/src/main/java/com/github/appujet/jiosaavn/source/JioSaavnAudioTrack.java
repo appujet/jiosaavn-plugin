@@ -20,7 +20,7 @@ public class JioSaavnAudioTrack extends ExtendedAudioTrack {
 
     @Override
     public String getPlaybackUrl() {
-        return getDownloadURL(getIdentifier());
+        return getDownloadURL(this.trackInfo.identifier);
     }
 
     private String getDownloadURL(String identifier) {
