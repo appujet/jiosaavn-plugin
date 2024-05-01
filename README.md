@@ -12,7 +12,7 @@ Replace `VERSION` with the latest release version.
 ```yaml
 lavalink:
   plugins:
-    - dependency: "com.appujet:jiosaavn-plugin:VERSION"
+    - dependency: "com.github.appujet:jiosaavn-plugin:VERSION"
       repository: "https://jitpack.io"
 ```
 
@@ -29,7 +29,7 @@ server: # REST and WS server
 lavalink:
 # plugins would go here, but they are auto-loaded when developing
 #  plugins:
-#    - dependency: "com.appujet:jiosaavn-plugin:VERSION"
+#    - dependency: "com.github.appujet:jiosaavn-plugin:VERSION"
 #      repository: "https://jitpack.io"
   server:
     password: "youshallnotpass"
