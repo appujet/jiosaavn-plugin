@@ -7,8 +7,6 @@ import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Iterator;
 
 public class Utils {
 

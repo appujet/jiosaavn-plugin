@@ -66,8 +66,6 @@ public abstract class ExtendedAudioSourceManager  implements AudioSourceManager,
                 cookieStore = new BasicCookieStore();
                 context.setCookieStore(cookieStore);
             }
-
-            // Reset cookies for each sequence of requests.
             cookieStore.clear();
         }
 

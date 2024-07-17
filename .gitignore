@@ -28,5 +28,5 @@ replay_pid*
 .DS_Store
 */build/*
 build
-*/logs/*
+logs/*
 application.yml
