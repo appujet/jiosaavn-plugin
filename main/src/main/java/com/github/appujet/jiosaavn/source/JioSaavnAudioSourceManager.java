@@ -255,7 +255,10 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
         if (artists.isNull()) {
             return "Unknown";
         }
-        return artists.values().stream().map(name -> name.get("name").text()).collect(Collectors.joining(", "));
+        return artists.values().stream()
+                .map(name -> name.get("name").text())
+                .findFirst()
+                .orElse("Unknown");
     }
 
     private String cleanString(String text) {
