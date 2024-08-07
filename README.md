@@ -24,25 +24,66 @@ For all supported urls and queries see [here](#supported-urls-and-queries)
 
 ```yaml
 server: # REST and WS server
-  port: 2333
+  port: 2333 # The port that the server listens on
   address: 0.0.0.0
+  http2:
+    enabled: false # Whether to enable HTTP/2 support
+plugins:
+  jiosaavn:
+    apiURL: "https://saavn.dev/api" # JioSaavn API URL
+  youtube:
+    enabled: true # Whether this source can be used.
+    allowSearch: true # Whether "ytsearch:" and "ytmsearch:" can be used.
+    allowDirectVideoIds: true # Whether just video IDs can match. If false, only complete URLs will be loaded.
+    allowDirectPlaylistIds: true # Whether just playlist IDs can match. If false, only complete URLs will be loaded.
+    # The clients to use for track loading. See below for a list of valid clients.
+    # Clients are queried in the order they are given (so the first client is queried first and so on...)
+    clients:
+      - MUSIC
+      - WEB
+      - ANDROID_TESTSUITE
+      - ANDROID_MUSIC
+      - TVHTML5EMBEDDED
+      - ANDROID_LITE
+      - MEDIA_CONNECT
+      - IOS
 lavalink:
-# plugins would go here, but they are auto-loaded when developing
-#  plugins:
-#    - dependency: "com.github.appujet:jiosaavn-plugin:VERSION"
-#      repository: "https://jitpack.io"
+  plugins:
+    - dependency: "com.github.appujet:jiosaavn-plugin:VERSION"
+      repository: "https://jitpack.io"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.5.2"
+      snapshot: false # set to true if you want to use snapshot builds.
+  pluginsDir: './plugins'
   server:
     password: "youshallnotpass"
     sources:
-      youtube: true
+      # The default Youtube source is now deprecated and won't receive further updates. Please use https://github.com/lavalink-devs/youtube-source#plugin instead.
+      youtube: false
       bandcamp: true
       soundcloud: true
       twitch: true
       vimeo: true
-      http: true
+      mixer: true
+      nico: true
+      http: true # warning: keeping HTTP enabled without a proxy configured could expose your server's IP address.
       local: false
-    bufferDurationMs: 400 # The duration of the NAS buffer. Higher values fare better against longer GC pauses
+    filters: # All filters are enabled by default
+      volume: true
+      equalizer: true
+      karaoke: true
+      timescale: true
+      tremolo: true
+      vibrato: true
+      distortion: true
+      rotation: true
+      channelMix: true
+      lowPass: true
+    bufferDurationMs: 400 # The duration of the NAS buffer. Higher values fare better against longer GC pauses. Duration <= 0 to disable JDA-NAS. Minimum of 40ms, lower values may introduce pauses.
     frameBufferDurationMs: 5000 # How many milliseconds of audio to keep buffered
+    opusEncodingQuality: 10 # Opus encoder quality. Valid values range from 0 to 10, where 10 is best quality but is the most expensive on the CPU.
+    resamplingQuality: MEDIUM # Quality of resampling operations. Valid values are LOW, MEDIUM and HIGH, where HIGH uses the most CPU.
+    trackStuckThresholdMs: 10000 # The threshold for how long a track can be stuck. A track is stuck if does not return any audio data.
+    useSeekGhosting: true # Seek ghosting is the effect where whilst a seek is in progress, the audio buffer is read from until empty, or until seek is ready.
     youtubePlaylistLoadLimit: 6 # Number of pages at 100 each
     playerUpdateInterval: 5 # How frequently to send player updates to clients, in seconds
     youtubeSearchEnabled: true
@@ -54,10 +95,15 @@ lavalink:
       #strategy: "RotateOnBan" # RotateOnBan | LoadBalance | NanoSwitch | RotatingNanoSwitch
       #searchTriggersFail: true # Whether a search 429 should trigger marking the ip as failing
       #retryLimit: -1 # -1 = use default lavaplayer value | 0 = infinity | >0 = retry will happen this numbers times
+    #youtubeConfig: # Required for avoiding all age restrictions by YouTube, some restricted videos still can be played without.
+      #email: "your account mail" # Email of Google account
+      #password: "your account password" # Password of Google account
+    #httpConfig: # Useful for blocking bad-actors from ip-grabbing your music node and attacking it, this way only the http proxy will be attacked
+      #proxyHost: "localhost" # Hostname of the proxy, (ip or domain)
+      #proxyPort: 3128 # Proxy port, 3128 is the default for squidProxy
+      #proxyUser: "" # Optional user for basic authentication fields, leave blank if you don't use basic auth
+      #proxyPassword: "" # Password for basic authentication
 
-plugins:
-  jiosaavn:
-    apiURL: "https://saavn.dev/api" # JioSaavn API URL
 metrics:
   prometheus:
     enabled: false
@@ -72,13 +118,26 @@ sentry:
 
 logging:
   file:
-    max-history: 30
-    max-size: 1GB
-  path: ./logs/
+    path: ./logs/
 
   level:
+    # Set this to DEBUG to enable more detailed logging. Please note that this will likely spam your console.
     root: INFO
+    # Set this to DEBUG to enable more detailed logging from Lavalink.
     lavalink: INFO
+
+  request:
+    enabled: true
+    includeClientInfo: true
+    includeHeaders: false
+    includeQueryString: true
+    includePayload: true
+    maxPayloadLength: 10000
+
+  logback:
+    rollingpolicy:
+      max-file-size: 1GB
+      max-history: 30
 ```
 
 ## Advantages of Using JioSaavn
