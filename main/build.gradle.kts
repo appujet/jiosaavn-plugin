@@ -4,7 +4,7 @@ plugins {
 }
 
 project.group = "com.github.appujet"
-project.version = "0.1.6"
+project.version = "0.1.7"
 val archivesBaseName = "jiosaavn"
 
 dependencies {

@@ -5,13 +5,12 @@ import com.github.appujet.jiosaavn.ExtendedAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools;
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
-import com.sedmelluq.discord.lavaplayer.track.AudioItem;
-import com.sedmelluq.discord.lavaplayer.track.AudioReference;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import com.sedmelluq.discord.lavaplayer.track.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -25,6 +24,7 @@ import java.util.stream.Collectors;
 
 public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     private static final Pattern JIOSAAVN_REGEX = Pattern.compile("(https?://)(www\\.)?jiosaavn\\.com/(song|album|featured|artist)/([a-zA-Z0-9-_]+)");
+    private static final Logger log = LoggerFactory.getLogger(JioSaavnAudioSourceManager.class);
     public static String BASE_API = null;
     public static final String SEARCH_PREFIX = "jssearch:";
     public static final String RECOMMENDATIONS_PREFIX = "jsrec:";
@@ -88,20 +88,33 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     private AudioItem getSearchResult(String query) throws IOException {
-        final JsonBrowser json = this.fetchJson("/search?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8));
+        final JsonBrowser json = this.fetchJson("/search/songs?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&limit=50");
+
         if (json.isNull() || json.get("data").isNull()) {
             return AudioReference.NO_TRACK;
         }
         final JsonBrowser data = json.get("data");
-        if (data.get("songs").isNull()) {
+
+        if (data.get("results").isNull()) {
             return AudioReference.NO_TRACK;
         }
-        final JsonBrowser song = data.get("songs").get("results").index(0);
-        if (song.isNull()) {
+
+        final JsonBrowser songs = data.get("results");
+
+        if (songs.isNull() || !songs.isList()) {
             return AudioReference.NO_TRACK;
         }
-        var tracks = this.fetchJson("/songs?ids=" + song.get("id").text());
-        return this.buildTrack(tracks.get("data").index(0));
+
+        final List<AudioTrack> tracks = songs.values().stream()
+                .map(this::buildTrack)
+                .collect(Collectors.toList());
+
+        return new BasicAudioPlaylist(
+                "Search results for: " + query,
+                tracks,
+                null,
+                true
+        );
     }
 
     private AudioItem getTrack(String identifier) throws IOException {
