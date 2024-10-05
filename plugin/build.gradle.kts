@@ -5,11 +5,10 @@ plugins {
     id("com.github.johnrengelman.shadow")
     id("com.github.breadmoirai.github-release")
 }
-
-val pluginVersion = Version(0, 1, 7)
+val pluginVersion = findProperty("version")
 
 group = "com.github.appujet"
-version = "$pluginVersion"
+version = pluginVersion!!
 val archivesBaseName = "jiosaavn-plugin"
 val preRelease = System.getenv("PRERELEASE") == "true"
 val verName = "${if (preRelease) "PRE_" else ""}$pluginVersion${if(preRelease) "_${System.getenv("GITHUB_RUN_NUMBER")}" else ""}"

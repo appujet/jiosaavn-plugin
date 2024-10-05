@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
-    private static final Pattern JIOSAAVN_REGEX = Pattern.compile("(https?://)(www\\.)?jiosaavn\\.com/(song|album|featured|artist)/([a-zA-Z0-9-_]+)");
+    private static final Pattern JIOSAAVN_REGEX = Pattern.compile("(https?://)(www\\.)?jiosaavn\\.com/(song|album|featured|artist|s/playlist)/([a-zA-Z0-9-_]+)(/([a-zA-Z0-9-_]+))?");
     private static final Logger log = LoggerFactory.getLogger(JioSaavnAudioSourceManager.class);
     public static String BASE_API = null;
     public static final String SEARCH_PREFIX = "jssearch:";
@@ -56,12 +56,14 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
                 return null;
             }
             String type = matcher.group(3);
+
             switch (type) {
                 case "song":
                     return this.getTrack(audioReference.identifier);
                 case "album":
                     return this.getAlbum(audioReference.identifier);
                 case "featured":
+                case "s/playlist":
                     return this.getPlaylist(audioReference.identifier);
                 case "artist":
                     return this.getArtist(audioReference.identifier);

@@ -4,7 +4,7 @@ plugins {
 }
 
 project.group = "com.github.appujet"
-project.version = "0.1.7"
+project.version = findProperty("version") as String 
 val archivesBaseName = "jiosaavn"
 
 dependencies {
