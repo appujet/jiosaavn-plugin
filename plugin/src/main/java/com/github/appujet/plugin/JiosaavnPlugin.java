@@ -20,7 +20,10 @@ public class JiosaavnPlugin implements AudioPlayerManagerConfiguration {
         log.info("Loaded JioSaavn plugin...");
         this.sourcesConfig = sourcesConfig;
         if (this.sourcesConfig.getApiURL() != null) {
-            this.jioSaavn = new JioSaavnAudioSourceManager(this.sourcesConfig.getApiURL());
+            this.jioSaavn = new JioSaavnAudioSourceManager(
+                this.sourcesConfig.getApiURL(), 
+                this.sourcesConfig.getPlaylistTrackLimit(), 
+                this.sourcesConfig.getRecommendationsTrackLimit());
         }
     }
 

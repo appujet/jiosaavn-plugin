@@ -26,14 +26,19 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     private static final Pattern JIOSAAVN_REGEX = Pattern.compile("(https?://)(www\\.)?jiosaavn\\.com/(song|album|featured|artist|s/playlist)/([a-zA-Z0-9-_]+)(/([a-zA-Z0-9-_]+))?");
     private static final Logger log = LoggerFactory.getLogger(JioSaavnAudioSourceManager.class);
     public static String BASE_API = null;
+    private final int playlistTrackLimit;
+    private final int recommendationsTrackLimit;
     public static final String SEARCH_PREFIX = "jssearch:";
     public static final String RECOMMENDATIONS_PREFIX = "jsrec:";
 
-    public JioSaavnAudioSourceManager(String apiURL) {
+    public JioSaavnAudioSourceManager(String apiURL, int playlistTrackLimit, int recommendationsTrackLimit) {
         if (apiURL == null || apiURL.isEmpty()) {
             throw new IllegalArgumentException("API URL must be provided");
         }
         BASE_API = apiURL;
+        this.playlistTrackLimit = Math.abs(playlistTrackLimit);
+        this.recommendationsTrackLimit = Math.abs(recommendationsTrackLimit);
+
     }
 
     @Override
@@ -151,7 +156,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     public AudioItem getPlaylist(String identifier) {
-        final JsonBrowser json = this.fetchJson("/playlists?link=" + identifier);
+        final JsonBrowser json = this.fetchJson("/playlists?link=" + identifier + "&limit=" + playlistTrackLimit);
         if (json.isNull() || json.get("data").isNull()) {
             return AudioReference.NO_TRACK;
         }
@@ -172,7 +177,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     private AudioItem getArtist(String identifier) {
-        final JsonBrowser json = this.fetchJson("/artists?link=" + identifier);
+        final JsonBrowser json = this.fetchJson("/artists?link=" + identifier + "&songCount=50");
         if (json.isNull() || json.get("data").isNull()) {
             return AudioReference.NO_TRACK;
         }
@@ -193,7 +198,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     public AudioItem getRecommendations(String identifier) {
-        final JsonBrowser json = this.fetchJson("/songs/" + identifier + "/suggestions?limit=10");
+        final JsonBrowser json = this.fetchJson("/songs/" + identifier + "/suggestions?limit=" + recommendationsTrackLimit);
         if (json.isNull() || json.get("data").isNull()) {
             return AudioReference.NO_TRACK;
         }
