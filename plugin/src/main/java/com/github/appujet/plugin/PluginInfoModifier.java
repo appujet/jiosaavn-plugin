@@ -35,7 +35,7 @@ public class PluginInfoModifier implements AudioPluginInfoModifier {
     public JsonObject modifyAudioTrackPluginInfo(@NotNull AudioTrack track) {
         final String uri;
 
-        if (track instanceof ExtendedAudioTrack extendedTrack) {
+        if (track instanceof  @SuppressWarnings("unused") ExtendedAudioTrack extendedTrack) {
             uri = track.getIdentifier();
         } else {
             uri = track.getInfo().uri;

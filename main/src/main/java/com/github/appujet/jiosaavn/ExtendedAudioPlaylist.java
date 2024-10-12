@@ -3,7 +3,7 @@ package com.github.appujet.jiosaavn;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
 
 import java.util.List;
 
@@ -11,14 +11,10 @@ public class ExtendedAudioPlaylist extends BasicAudioPlaylist {
 
     @NotNull
     protected final Type type;
-    @Nullable
-    protected final String url;
-    @Nullable
-    protected final String artworkURL;
-    @Nullable
-    protected final String author;
-    @Nullable
-    protected final Integer totalTracks;
+    protected final @NotNull String url;
+    protected final @NotNull String artworkURL;
+    protected final @NotNull String author;
+    protected final @NotNull Integer totalTracks;
 
     public ExtendedAudioPlaylist(String name, List<AudioTrack> tracks, @NotNull Type type, @NotNull String url, @NotNull String artworkURL, @NotNull String author, @NotNull Integer totalTracks) {
         super(name, tracks, null, false);
@@ -34,23 +30,19 @@ public class ExtendedAudioPlaylist extends BasicAudioPlaylist {
         return type;
     }
 
-    @Nullable
-    public String getUrl() {
+    public @NotNull String getUrl() {
         return this.url;
     }
 
-    @Nullable
-    public String getArtworkURL() {
+    public @NotNull String getArtworkURL() {
         return this.artworkURL;
     }
 
-    @Nullable
-    public String getAuthor() {
+    public @NotNull String getAuthor() {
         return this.author;
     }
 
-    @Nullable
-    public Integer getTotalTracks() {
+    public @NotNull Integer getTotalTracks() {
         return this.totalTracks;
     }
 

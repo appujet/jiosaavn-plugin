@@ -1,14 +1,11 @@
 package com.github.appujet.jiosaavn.source;
 
-
 import com.github.appujet.jiosaavn.ExtendedAudioSourceManager;
-
 import com.github.appujet.jiosaavn.ExtendedAudioTrack;
 import com.github.appujet.jiosaavn.Utils;
 import com.sedmelluq.discord.lavaplayer.tools.Units;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-
 
 public class JioSaavnAudioTrack extends ExtendedAudioTrack {
     private final ExtendedAudioSourceManager manager;
@@ -20,56 +17,25 @@ public class JioSaavnAudioTrack extends ExtendedAudioTrack {
 
     @Override
     public String getPlaybackUrl() {
-        return getDownloadURL(this.trackInfo.identifier);
-    }
+        var json = manager.fetchJson("song.getDetails", new String[] { "pids", this.trackInfo.identifier }, null);
 
-    private String getDownloadURL(String identifier) {
-        // Fetch JSON data from the API
-        var json = Utils.fetchJson(JioSaavnAudioSourceManager.BASE_API + "/songs?ids=" + identifier, manager);
-
-        // Extract the download URL information
-        var downloadInfoLink = json.get("data").index(0).get("downloadUrl");
-
-        if (downloadInfoLink.isNull()) {
+        if (json.isNull() || json.get("songs").values().isEmpty()) {
+            log.debug("Invalid JSON response or no data found for identifier: {}", this.trackInfo.identifier);
             return null;
         }
-
-        // Retrieve all download URLs
-        var downloadUrls = downloadInfoLink.values();
-        if (downloadUrls.isEmpty()) {
+        var data = json.get("songs").index(0);
+        var encryptedMediaUrl = data.get("more_info").get("encrypted_media_url").text();
+        if (encryptedMediaUrl == null) {
+            log.debug("Encrypted media URL not found for identifier: {}", this.trackInfo.identifier);
             return null;
         }
+        var url = Utils.getDownloadLink(encryptedMediaUrl);
 
-        String downloadUrl = null;
-
-        // Check for the desired quality in descending order
-        for (var url : downloadUrls) {
-            if (url.get("quality").text().equals("320kbps")) {
-                downloadUrl = url.get("url").text();
-                break;
-            }
+        if (url == null) {
+            log.debug("Failed to decrypt media URL for identifier: {}", this.trackInfo.identifier);
+            return null;
         }
-        if (downloadUrl == null) {
-            for (var url : downloadUrls) {
-                if (url.get("quality").text().equals("160kbps")) {
-                    downloadUrl = url.get("url").text();
-                    break;
-                }
-            }
-        }
-        if (downloadUrl == null) {
-            for (var url : downloadUrls) {
-                if (url.get("quality").text().equals("96kbps")) {
-                    downloadUrl = url.get("url").text();
-                    break;
-                }
-            }
-        }
-        if (downloadUrl == null && !downloadUrls.isEmpty()) {
-            downloadUrl = downloadUrls.get(0).get("url").text();
-        }
-
-        return downloadUrl;
+        return url;
     }
 
     @Override

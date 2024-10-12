@@ -1,8 +1,10 @@
 # JioSaavn Plugin For Lavalink
 
+[![JitPack](https://jitpack.io/v/appujet/jiosaavn-plugin.svg)](https://jitpack.io/#appujet/jiosaavn-plugin)
+
 - This is a plugin for [Lavalink](https://github.com/lavalink-devs/Lavalink)
 - This plugin allows you to play songs from JioSaavn in your discord server.
-- This plugin uses the [JioSaavn API](https://github.com/sumitkolhe/jiosaavn-api) to fetch songs.
+- NO API KEY REQUIRED
 - Special thanks to [topi314](https://github.com/topi314/LavaSrc) and [duncte123](https://github.com/duncte123) because most of the code for this plugin is based on [Lavasrc](https://github.com/topi314/LavaSrc) and [skybot-lavalink-plugin](https://github.com/DuncteBot/skybot-lavalink-plugin).
 
 ## Lavalink Usage
@@ -57,9 +59,8 @@ lavalink:
 
 plugins:
   jiosaavn:
-    apiURL: "https://saavn.dev/api" # JioSaavn API URL
     playlistTrackLimit: 50 # The maximum number of tracks to return from given playlist (default 50 tracks)
-    recommendationsTrackLimit: 20 # The maximum number of track to return from recommendations (default 20 tracks)
+    recommendationsTrackLimit: 10 # The maximum number of track to return from recommendations (default 10 tracks)
     
 metrics:
   prometheus:
@@ -102,14 +103,3 @@ logging:
 - <https://www.jiosaavn.com/album/bhediya/wSM2AOubajk>_
 - <https://www.jiosaavn.com/artist/arijit-singh-songs/LlRWpHzy3Hk>_
 - <https://www.jiosaavn.com/featured/jai-hanuman/8GIEhrr8clSO0eMLZZxqsA>__
-
-## How to get API URL ?
-
-- You can host the api locally using [this guide](https://github.com/sumitkolhe/jiosaavn-api)
-
-- You can easily deploy your own instance of the API by clicking the button below:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/sumitkolhe/jiosaavn-api)
-
-> [!TIP]
-> To ensure the API provides results in the intended language, configure the [Serverless Function Region](https://vercel.com/docs/concepts/functions/serverless-functions/regions) in Vercel to `Mumbai, India (South) - > bom1`.
