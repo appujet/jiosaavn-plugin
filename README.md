@@ -58,6 +58,9 @@ lavalink:
 plugins:
   jiosaavn:
     apiURL: "https://saavn.dev/api" # JioSaavn API URL
+    playlistTrackLimit: 50 # The maximum number of tracks to return from given playlist (default 50 tracks)
+    recommendationsTrackLimit: 20 # The maximum number of track to return from recommendations (default 20 tracks)
+    
 metrics:
   prometheus:
     enabled: false
