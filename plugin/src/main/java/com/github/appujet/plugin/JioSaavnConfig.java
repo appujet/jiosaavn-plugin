@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "plugins.jiosaavn")
 public class JioSaavnConfig {
     private int playlistTrackLimit = 50; // default value for playlist track limit
-    private int recommendationsTrackLimit = 20; // default value for recommendations
+    private int recommendationsTrackLimit = 10; // default value for recommendations
 
     public int getPlaylistTrackLimit() {
         return playlistTrackLimit;

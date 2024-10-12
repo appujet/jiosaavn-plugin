@@ -60,7 +60,7 @@ public abstract class ExtendedAudioSourceManager  implements AudioSourceManager,
             final HttpGet httpGet = new HttpGet(uri);
             try (final CloseableHttpResponse response = this.getHttpInterface().execute(httpGet)) {
                 final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-                log.info("Response from API: {}", content);
+                //log.info("Response from API: {}", content);
                 return JsonBrowser.parse(content);
             }
         } catch (Exception e) {

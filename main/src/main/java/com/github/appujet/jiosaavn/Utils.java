@@ -3,6 +3,8 @@ package com.github.appujet.jiosaavn;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.regex.Matcher;
@@ -74,10 +76,30 @@ public class Utils {
 
         Matcher matcher = pattern.matcher(url);
         if (matcher.find()) {
-            return matcher.group(1);  // Return the first captured group
+            return matcher.group(1); // Return the first captured group
         }
         return null;
     }
+    
+    /**
+     * Encodes a string using URL encoding and replaces certain characters.
+     * @param input The string to encode.
+     * @return The encoded string.
+     */
+    public static String encodeURIComponent(String input) {
+        String encoded = URLEncoder.encode(input, StandardCharsets.UTF_8);
+        encoded = encoded.replace("+", "%20");
+        encoded = encoded.replace("'", "%27");
+        encoded = encoded.replace("%", "%25");
+        encoded = encoded.replace("#", "%23");
+        encoded = encoded.replace("&", "%26");
+        encoded = encoded.replace("=", "%3D");
+        encoded = encoded.replace("?", "%3F");
+
+        return encoded;
+
+    }
+
     /**
      * Generates a download link by decrypting the encrypted media URL.
      *
