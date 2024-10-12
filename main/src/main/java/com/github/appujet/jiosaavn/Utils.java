@@ -1,14 +1,8 @@
 package com.github.appujet.jiosaavn;
 
-import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.regex.Matcher;
@@ -84,15 +78,6 @@ public class Utils {
         }
         return null;
     }
-    public static JsonBrowser fetchJson(String pageURl, ExtendedAudioSourceManager sourceManager) {
-        final HttpGet httpGet = new HttpGet(pageURl);
-        try (final CloseableHttpResponse response = sourceManager.getHttpInterface().execute(httpGet)) {
-            final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-            return JsonBrowser.parse(content);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
     /**
      * Generates a download link by decrypting the encrypted media URL.
      *
@@ -111,7 +96,7 @@ public class Utils {
 
             byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
             String decryptedLink = new String(decryptedBytes).trim();
-            System.out.println("Decrypted Link: " + decryptedLink);
+
             for (String quality : QUALITIES) {
                 String downloadUrl = decryptedLink.replace("_96", quality);
                 if (isValidUrl(downloadUrl)) {

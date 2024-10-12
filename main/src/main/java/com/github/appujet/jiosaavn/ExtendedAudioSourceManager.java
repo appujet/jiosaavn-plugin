@@ -23,7 +23,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +33,6 @@ import java.util.function.Function;
 public abstract class ExtendedAudioSourceManager  implements AudioSourceManager, HttpConfigurable {
     public static final Logger log = LoggerFactory.getLogger(ExtendedAudioSourceManager.class);
     protected final HttpInterfaceManager httpInterfaceManager;
-    public static String BASE_API = null;
     private static final String BASE_API_URL = "https://www.jiosaavn.com/api.php?";
     public ExtendedAudioSourceManager () {
         this(true);
@@ -56,23 +54,13 @@ public abstract class ExtendedAudioSourceManager  implements AudioSourceManager,
         return httpInterfaceManager.getInterface();
     }
 
-    public JsonBrowser fetchJson(String pageURl) {
-        final HttpGet httpGet = new HttpGet(BASE_API + pageURl);
-        try (final CloseableHttpResponse response = this.getHttpInterface().execute(httpGet)) {
-            final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-            return JsonBrowser.parse(content);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public JsonBrowser fetchJson(String endpoint, String[] params, String context) {
         try {
             URI uri = getUri(endpoint, params, context);
             final HttpGet httpGet = new HttpGet(uri);
             try (final CloseableHttpResponse response = this.getHttpInterface().execute(httpGet)) {
                 final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-                //log.info("Response from API: {}", content);
+                log.info("Response from API: {}", content);
                 return JsonBrowser.parse(content);
             }
         } catch (Exception e) {

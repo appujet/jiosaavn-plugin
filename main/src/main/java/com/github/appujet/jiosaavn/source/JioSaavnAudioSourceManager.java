@@ -193,11 +193,11 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
 
     public AudioItem getRecommendations(String identifier) {
         final JsonBrowser json = this.fetchJson("webradio.getSong", new String[] {"stationid", identifier, "k", String.valueOf(recommendationsTrackLimit)}, "android");
-        if (json.isNull() || json.get("data").isNull()) {
+        if (json.isNull() || json.get("songs").isNull()) {
             return AudioReference.NO_TRACK;
         }
 
-        final JsonBrowser data = json.get("data");
+        final JsonBrowser data = json.get("songs");
         if (data.isNull()) {
             return AudioReference.NO_TRACK;
         }
