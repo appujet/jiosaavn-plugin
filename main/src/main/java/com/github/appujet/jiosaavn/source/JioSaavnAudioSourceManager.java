@@ -2,40 +2,28 @@ package com.github.appujet.jiosaavn.source;
 
 import com.github.appujet.jiosaavn.ExtendedAudioPlaylist;
 import com.github.appujet.jiosaavn.ExtendedAudioSourceManager;
+import com.github.appujet.jiosaavn.Utils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools;
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
 import com.sedmelluq.discord.lavaplayer.track.*;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
-    private static final Pattern JIOSAAVN_REGEX = Pattern.compile("(https?://)(www\\.)?jiosaavn\\.com/(song|album|featured|artist|s/playlist)/([a-zA-Z0-9-_]+)(/([a-zA-Z0-9-_]+))?");
-    private static final Logger log = LoggerFactory.getLogger(JioSaavnAudioSourceManager.class);
-    public static String BASE_API = null;
+    private static final Pattern JIOSAAVN_REGEX = Pattern.compile(
+            "(https?://)(www\\.)?jiosaavn\\.com/(song|album|featured|artist|s/playlist)/([a-zA-Z0-9-_]+)(/([a-zA-Z0-9-_]+))?");
     private final int playlistTrackLimit;
     private final int recommendationsTrackLimit;
     public static final String SEARCH_PREFIX = "jssearch:";
     public static final String RECOMMENDATIONS_PREFIX = "jsrec:";
 
-    public JioSaavnAudioSourceManager(String apiURL, int playlistTrackLimit, int recommendationsTrackLimit) {
-        if (apiURL == null || apiURL.isEmpty()) {
-            throw new IllegalArgumentException("API URL must be provided");
-        }
-        BASE_API = apiURL;
+    public JioSaavnAudioSourceManager(int playlistTrackLimit, int recommendationsTrackLimit) {
         this.playlistTrackLimit = Math.abs(playlistTrackLimit);
         this.recommendationsTrackLimit = Math.abs(recommendationsTrackLimit);
 
@@ -95,18 +83,13 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     private AudioItem getSearchResult(String query) throws IOException {
-        final JsonBrowser json = this.fetchJson("/search/songs?query=" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "&limit=50");
+        final JsonBrowser json = this.fetchJson("search.getResults",
+                new String[] { "q", query, "cc", "in", "includeMetaTags", "1", "n", "100" }, null);
 
-        if (json.isNull() || json.get("data").isNull()) {
+        if (json.isNull()) {
             return AudioReference.NO_TRACK;
         }
-        final JsonBrowser data = json.get("data");
-
-        if (data.get("results").isNull()) {
-            return AudioReference.NO_TRACK;
-        }
-
-        final JsonBrowser songs = data.get("results");
+        final JsonBrowser songs = json.get("results");
 
         if (songs.isNull() || !songs.isList()) {
             return AudioReference.NO_TRACK;
@@ -120,85 +103,96 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
                 "Search results for: " + query,
                 tracks,
                 null,
-                true
-        );
+                true);
     }
 
-    private AudioItem getTrack(String identifier) throws IOException {
-        final JsonBrowser json = this.fetchJson("/songs?link=" + identifier);
-        if (json.isNull() || json.get("data").isNull()) {
+    private AudioItem getTrack(String url) throws IOException {
+        String token = Utils.extractSongToken(url);
+        final JsonBrowser json = this.fetchJson("webapi.get", new String[] { "token", token, "type", "song" }, null);
+        if (json.isNull() || json.get("songs").isNull() || json.get("songs").values().isEmpty()) {
             return AudioReference.NO_TRACK;
         }
-        final JsonBrowser data = json.get("data").index(0);
+        final JsonBrowser data = json.get("songs").index(0);
         return this.buildTrack(data);
     }
 
-    public AudioItem getAlbum(String identifier) {
+    public AudioItem getAlbum(String url) {
+        String token = Utils.extractAlbumToken(url);
+        final JsonBrowser json = this.fetchJson("webapi.get", new String[] {"type", "album", "token", token}, null);
 
-        final JsonBrowser json = this.fetchJson("/albums?link=" + identifier);
-
-        if (json.isNull() || json.get("data").isNull()) {
+        if (json.isNull() || json.get("list").isNull()) {
             return AudioReference.NO_TRACK;
         }
-        final JsonBrowser data = json.get("data");
-        if (data.get("songs").isNull()) {
+        final JsonBrowser data = json.get("list");
+        if (data.isNull() || !data.isList()) {
             return AudioReference.NO_TRACK;
         }
+        final String albumTitle = json.get("title").text();
+        final List<AudioTrack> tracks = data.values().stream()
+                .map(this::buildTrack)
+                .collect(Collectors.toList());
+        final String albumUrl = json.get("perma_url").text();
+        final String artwork = this.parseImage(json.get("image"));
+        final String artist = parseArtist(json);
+        final int trackCount = (int) json.get("list_count").asLong(0);
+        return new JioSaavnAudioPlaylist(albumTitle, tracks, ExtendedAudioPlaylist.Type.ALBUM, albumUrl, artwork, artist, trackCount);
+    }
+
+    private AudioItem getArtist(String url) {
+        String token = Utils.extractArtistToken(url);
+        final JsonBrowser json = this.fetchJson("webapi.get", new String[] {"type", "artist", "token", token}, null);
+        if (json.isNull() || json.get("topSongs").isNull()) {
+            return AudioReference.NO_TRACK;
+        }
+
+        final JsonBrowser data = json.get("topSongs");
+        if (data.isNull() || !data.isList()) {
+            return AudioReference.NO_TRACK;
+        }
+        final String artistName = json.get("name").text();
+        final List<AudioTrack> tracks = data.values().stream()
+                .map(this::buildTrack)
+                .collect(Collectors.toList());
+        
+        final String artwork = this.parseImage(json.get("image"));
+        final String artist = parseArtist(json);
+
         return new JioSaavnAudioPlaylist(
-                data.get("name").text(),
-                this.buildTracks(data.get("songs")),
-                ExtendedAudioPlaylist.Type.ALBUM,
-                data.get("url").text(),
-                this.parseImage(data.get("image")),
-                this.parseArtist(data),
-                (int) data.get("songCount").asLong(0)
-        );
+            artistName,
+             tracks,
+             ExtendedAudioPlaylist.Type.ARTIST,
+             url,
+             artwork,
+             artist,
+                null);
+             
     }
 
     public AudioItem getPlaylist(String identifier) {
-        final JsonBrowser json = this.fetchJson("/playlists?link=" + identifier + "&limit=" + playlistTrackLimit);
-        if (json.isNull() || json.get("data").isNull()) {
+        String token = Utils.extractPlaylistToken(identifier);
+        final JsonBrowser json = this.fetchJson("webapi.get", new String[] {"type", "playlist", "token", token, "n", String.valueOf(playlistTrackLimit)}, null);
+        if (json.isNull() || json.get("list").isNull()) {
             return AudioReference.NO_TRACK;
         }
 
-        final JsonBrowser data = json.get("data");
-        if (data.get("songs").isNull()) {
+        final JsonBrowser data = json.get("list");
+        if (data.isNull() || !data.isList()) {
             return AudioReference.NO_TRACK;
         }
-        return new JioSaavnAudioPlaylist(
-                data.get("name").text(),
-                this.buildTracks(data.get("songs")),
-                ExtendedAudioPlaylist.Type.PLAYLIST,
-                data.get("url").text(),
-                this.parseImage(data.get("image")),
-                this.parseArtist(data),
-                (int) data.get("songCount").asLong(0)
-        );
-    }
+        final String playlistTitle = json.get("title").text();
+        final List<AudioTrack> tracks = data.values().stream()
+                .map(this::buildTrack)
+                .collect(Collectors.toList());
+        final String playlistUrl = json.get("perma_url").text();
+        final String artwork = this.parseImage(json.get("image"));
+        final String artist = parseArtist(json);
+        final int trackCount = (int) json.get("list_count").asLong(0);
 
-    private AudioItem getArtist(String identifier) {
-        final JsonBrowser json = this.fetchJson("/artists?link=" + identifier + "&songCount=50");
-        if (json.isNull() || json.get("data").isNull()) {
-            return AudioReference.NO_TRACK;
-        }
-
-        final JsonBrowser data = json.get("data");
-        if (data.get("topSongs").isNull()) {
-            return AudioReference.NO_TRACK;
-        }
-        return new JioSaavnAudioPlaylist(
-                data.get("name").text(),
-                this.buildTracks(data.get("topSongs")),
-                ExtendedAudioPlaylist.Type.ARTIST,
-                data.get("url").text(),
-                this.parseImage(data.get("image")),
-                data.get("name").text(),
-                null
-        );
+        return new JioSaavnAudioPlaylist(playlistTitle, tracks, ExtendedAudioPlaylist.Type.PLAYLIST, playlistUrl, artwork, artist, trackCount);
     }
 
     public AudioItem getRecommendations(String identifier) {
-        final JsonBrowser json = this.fetchJson("/songs/" + identifier + "/suggestions?limit=" + recommendationsTrackLimit);
+        final JsonBrowser json = this.fetchJson("webradio.getSong", new String[] {"stationid", identifier, "k", String.valueOf(recommendationsTrackLimit)}, "android");
         if (json.isNull() || json.get("data").isNull()) {
             return AudioReference.NO_TRACK;
         }
@@ -217,18 +211,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
                 null,
                 null,
                 null,
-                null
-        );
-    }
-
-    public JsonBrowser fetchJson(String pageURl) {
-        final HttpGet httpGet = new HttpGet(BASE_API + pageURl);
-        try (final CloseableHttpResponse response = this.getHttpInterface().execute(httpGet)) {
-            final String content = IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
-            return JsonBrowser.parse(content);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+                null);
     }
 
     private List<AudioTrack> buildTracks(JsonBrowser json) {
@@ -246,12 +229,14 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
         if (data.isNull()) {
             return null;
         }
-        final String title = cleanString(data.get("name").text());
+
+        final String title = data.get("title").text();
         final String id = data.get("id").text();
         final String artwork = this.parseImage(data.get("image"));
-        final long duration = data.get("duration").asLong(1) * 1000;
-        final String url = data.get("url").text();
-        var artist = cleanString(this.parseArtist(data));
+        final long duration = data.get("more_info").get("duration").asLong(1) * 1000;
+        final String url = data.get("perma_url").text();
+        final String artist = parseArtist(data);
+
         return new JioSaavnAudioTrack(
                 new AudioTrackInfo(
                         title,
@@ -261,49 +246,38 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
                         false,
                         url,
                         artwork,
-                        null
-                ),
-                this
-        );
+                        null),
+                this);
     }
 
     private String parseArtist(JsonBrowser json) {
         if (json.isNull()) {
             return null;
         }
-        var artists = json.get("artists").get("primary");
-        if (artists.isNull()) {
+        JsonBrowser artistMap = json.get("more_info").get("artistMap");
+        if (artistMap.isNull()) {
             return "Unknown";
         }
-        return artists.values().stream()
-                .map(name -> name.get("name").text())
-                .findFirst()
-                .orElse("Unknown");
-    }
-
-    private String cleanString(String text) {
-        if (text == null) {
-            return null;
+        JsonBrowser primaryArtists = artistMap.get("primary_artists");
+        if (primaryArtists.isNull()) {
+            return "Unknown";
         }
-        return text.replace("\"", "")
-                .replace("&quot;", "")
-                .replace("&amp;", "");
+        if (primaryArtists.isList()) {
+            if (!primaryArtists.values().isEmpty()) {
+                return primaryArtists.values().iterator().next().get("name").text();
+            }
+        }
+        return "Unknown";
     }
 
     private String parseImage(JsonBrowser json) {
         if (json.isNull()) {
             return null;
         }
-        var image = json.index(2);
-        if (image.isNull()) {
-            image = json.index(1);
+        String imageUrl = json.text();
+        if (imageUrl.contains("150x150")) {
+            imageUrl = imageUrl.replace("150x150", "500x500");
         }
-        if (image.isNull()) {
-            image = json.index(0);
-        }
-        if (image.isNull()) {
-            return null;
-        }
-        return image.get("url").text();
+        return imageUrl;
     }
 }

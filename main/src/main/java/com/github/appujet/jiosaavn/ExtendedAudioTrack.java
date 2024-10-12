@@ -37,14 +37,19 @@ public class ExtendedAudioTrack extends DelegatedAudioTrack {
 
     protected void loadStream(LocalAudioTrackExecutor localExecutor, HttpInterface httpInterface) throws Exception {
         final String trackUrl = getPlaybackUrl();
-        try (PersistentHttpStream  stream = new PersistentHttpStream(httpInterface, new URI(trackUrl), this.getTrackDuration())) {
+        try (final var stream = this
+                .wrapStream(new PersistentHttpStream(httpInterface, new URI(trackUrl), this.getTrackDuration()))) {
             processDelegate(createAudioTrack(this.trackInfo, stream), localExecutor);
         } catch (Exception e) {
             log.error("Failed to load track from URL: {}", trackUrl, e);
             throw e;
         }
     }
-
+    
+    protected SeekableInputStream wrapStream(SeekableInputStream stream) {
+        return stream;
+    }
+    
     protected InternalAudioTrack createAudioTrack(AudioTrackInfo trackInfo, SeekableInputStream stream) {
         return new MpegAudioTrack(trackInfo, stream);
     }
