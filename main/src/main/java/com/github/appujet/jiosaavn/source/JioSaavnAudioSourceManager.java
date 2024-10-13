@@ -9,6 +9,8 @@ import com.sedmelluq.discord.lavaplayer.track.*;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -81,7 +83,8 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     private AudioItem getSearchResult(String query) throws IOException {
-        final JsonBrowser json = this.fetchJson("/api/search?q=" + query);
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+        final JsonBrowser json = this.fetchJson("/search?q=" + encodedQuery);
 
         if (json.isNull()) {
             return AudioReference.NO_TRACK;
@@ -105,7 +108,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     private AudioItem getTrack(String url) throws IOException {
-        final JsonBrowser json = this.fetchJson("/api/track?url=" + url);
+        final JsonBrowser json = this.fetchJson("/track?url=" + url);
 
         if (json.isNull() || json.get("track").isNull()) {
             return AudioReference.NO_TRACK;
@@ -115,7 +118,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
     }
 
     public AudioItem getAlbum(String url) {
-        final JsonBrowser json = this.fetchJson("/api/album?url=" + url);
+        final JsonBrowser json = this.fetchJson("/album?url=" + url);
         if (json.isNull() || json.get("album").isNull()) {
             return AudioReference.NO_TRACK;
         }
@@ -138,7 +141,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
 
     private AudioItem getArtist(String url) {
 
-        final JsonBrowser json = this.fetchJson("/api/artist?url=" + url);
+        final JsonBrowser json = this.fetchJson("/artist?url=" + url);
         if (json.isNull() || json.get("artist").isNull()) {
             return AudioReference.NO_TRACK;
         }
@@ -167,7 +170,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
 
     public AudioItem getPlaylist(String identifier) {
 
-        final JsonBrowser json = this.fetchJson("/api/playlist?url=" + identifier + "&limit=" + playlistTrackLimit);
+        final JsonBrowser json = this.fetchJson("/playlist?url=" + identifier + "&limit=" + playlistTrackLimit);
         if (json.isNull() || json.get("playlist").isNull()) {
             return AudioReference.NO_TRACK;
         }
@@ -191,7 +194,7 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
 
     public AudioItem getRecommendations(String identifier) {
 
-        final JsonBrowser json = this.fetchJson("/api/recommendations?id=" + identifier + "&limit=" + recommendationsTrackLimit);
+        final JsonBrowser json = this.fetchJson("/recommendations?id=" + identifier + "&limit=" + recommendationsTrackLimit);
 
         if (json.isNull() || !json.get("tracks").isList()) {
             return AudioReference.NO_TRACK;
@@ -222,9 +225,9 @@ public class JioSaavnAudioSourceManager extends ExtendedAudioSourceManager {
         final String title = cleanString(data.get("title").text());
         final String id = data.get("identifier").text();
         final String artwork = data.get("artworkUrl").text();
-        final long duration = data.get("duration").asLong(1);
+        final long duration = data.get("length").asLong(1);
         final String url = data.get("uri").text();
-        final String artist = cleanString(data.get("artist").text());
+        final String artist = cleanString(data.get("author").text());
 
         return new JioSaavnAudioTrack(
                 new AudioTrackInfo(

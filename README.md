@@ -59,7 +59,7 @@ lavalink:
 
 plugins:
   jiosaavn:
-    apiURL: "https://jiosaavn-plugin-api.vercel.app" # JioSaavn API URL
+    apiURL: "https://jiosaavn-plugin-api.deno.dev" # JioSaavn API URL
     playlistTrackLimit: 50 # The maximum number of tracks to return from given playlist (default 50 tracks)
     recommendationsTrackLimit: 10 # The maximum number of track to return from recommendations (default 10 tracks)
     
@@ -108,10 +108,3 @@ logging:
 ## How to get API URL ?
 
 - You can host the api locally using [this guide](https://github.com/appujet/jiosaavn-plugin-api)
-
-- You can easily deploy your own instance of the API by clicking the button below:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/appujet/jiosaavn-plugin-api)
-
-> [!TIP]
-> To ensure the API provides results in the intended language, configure the [Serverless Function Region](https://vercel.com/docs/concepts/functions/serverless-functions/regions) in Vercel to `Mumbai, India (South) - > bom1`.

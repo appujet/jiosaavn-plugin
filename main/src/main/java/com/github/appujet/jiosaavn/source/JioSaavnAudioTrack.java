@@ -18,7 +18,7 @@ public class JioSaavnAudioTrack extends ExtendedAudioTrack {
     @Override
     public String getPlaybackUrl() {
 
-        var json = manager.fetchJson("/api/track?id=" + this.trackInfo.identifier);
+        var json = manager.fetchJson("/track?id=" + this.trackInfo.identifier);
 
         if (json.isNull() || json.get("track").isNull()) {
             log.debug("Invalid JSON response or no data found for identifier: {}", this.trackInfo.identifier);
