@@ -17,20 +17,21 @@ public class JioSaavnAudioTrack extends ExtendedAudioTrack {
 
     @Override
     public String getPlaybackUrl() {
-        var json = manager.fetchJson("song.getDetails", new String[] { "pids", this.trackInfo.identifier }, null);
 
-        if (json.isNull() || json.get("songs").values().isEmpty()) {
+        var json = manager.fetchJson("/api/track?id=" + this.trackInfo.identifier);
+
+        if (json.isNull() || json.get("track").isNull()) {
             log.debug("Invalid JSON response or no data found for identifier: {}", this.trackInfo.identifier);
             return null;
         }
-        var data = json.get("songs").index(0);
-        var encryptedMediaUrl = data.get("more_info").get("encrypted_media_url").text();
+        var data = json.get("track");
+        var encryptedMediaUrl = data.get("encryptedMediaUrl").text();
         if (encryptedMediaUrl == null) {
             log.debug("Encrypted media URL not found for identifier: {}", this.trackInfo.identifier);
             return null;
         }
         var url = Utils.getDownloadLink(encryptedMediaUrl);
-
+        
         if (url == null) {
             log.debug("Failed to decrypt media URL for identifier: {}", this.trackInfo.identifier);
             return null;
