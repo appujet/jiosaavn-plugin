@@ -59,7 +59,7 @@ lavalink:
 
 plugins:
   jiosaavn:
-    apiURL: "https://jiosaavn-plugin-api.deno.dev" # JioSaavn API URL
+    apiURL: "https://jiosaavn-plugin-api.vercel.app/api" # JioSaavn API URL
     playlistTrackLimit: 50 # The maximum number of tracks to return from given playlist (default 50 tracks)
     recommendationsTrackLimit: 10 # The maximum number of track to return from recommendations (default 10 tracks)
     
