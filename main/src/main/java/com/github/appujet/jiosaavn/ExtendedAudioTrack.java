@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 public class ExtendedAudioTrack extends DelegatedAudioTrack {
     protected static final Logger log = LoggerFactory.getLogger(ExtendedAudioTrack.class);
@@ -36,7 +37,7 @@ public class ExtendedAudioTrack extends DelegatedAudioTrack {
     }
 
     protected void loadStream(LocalAudioTrackExecutor localExecutor, HttpInterface httpInterface) throws Exception {
-        final String trackUrl = getPlaybackUrl();
+        final String trackUrl = this.getPlaybackUrl();
         try (final var stream = this
                 .wrapStream(new PersistentHttpStream(httpInterface, new URI(trackUrl), this.getTrackDuration()))) {
             processDelegate(createAudioTrack(this.trackInfo, stream), localExecutor);
@@ -45,11 +46,11 @@ public class ExtendedAudioTrack extends DelegatedAudioTrack {
             throw e;
         }
     }
-    
+
     protected SeekableInputStream wrapStream(SeekableInputStream stream) {
         return stream;
     }
-    
+
     protected InternalAudioTrack createAudioTrack(AudioTrackInfo trackInfo, SeekableInputStream stream) {
         return new MpegAudioTrack(trackInfo, stream);
     }
@@ -58,7 +59,7 @@ public class ExtendedAudioTrack extends DelegatedAudioTrack {
         return this.trackInfo.length;
     }
 
-    public String getPlaybackUrl() {
+    public String getPlaybackUrl() throws URISyntaxException {
         return this.trackInfo.identifier;
     }
 
