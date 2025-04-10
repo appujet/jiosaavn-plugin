@@ -1,11 +1,17 @@
 plugins {
     `java-library`
-//    `maven-publish`
+    `maven-publish`
 }
 
 project.group = "com.github.appujet"
 project.version = findProperty("version") as String 
 val archivesBaseName = "jiosaavn"
+
+tasks {
+    publish {
+        dependsOn(publishToMavenLocal)
+    }
+}
 
 dependencies {
     compileOnly(libs.lavaplayer)
@@ -40,3 +46,12 @@ build.apply {
     jar.mustRunAfter(clean)
     sourcesJar.mustRunAfter(jar)
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("main") {
+            from(components["java"])
+        }
+    }
+}
+

@@ -1,8 +1,7 @@
 rootProject.name = "jiosaavn-plugin-base"
 
-include("plugin")
-project(":plugin").name = "jiosaavn-plugin"
 include("main")
+include("plugin")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
