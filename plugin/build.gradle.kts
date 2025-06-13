@@ -21,6 +21,7 @@ lavalinkPlugin {
     // Assuming libs and versions are defined elsewhere
     apiVersion = libs.versions.lavalink.api
     serverVersion = libs.versions.lavalink.server
+    configurePublishing = false
 }
 
 
@@ -77,6 +78,13 @@ publishing {
             authentication {
                 create<BasicAuthentication>("basic")
             }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("jiosaavn-plugin") {
+            artifactId = "jiosaavn-plugin"
+            from(components["java"])
         }
     }
 }
