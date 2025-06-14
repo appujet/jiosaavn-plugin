@@ -1,0 +1,50 @@
+name: Build & Publish
+
+on:
+  push:
+    branches: [ '**' ]
+    tags: [ 'v*' ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    env:
+      USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Set version and pre-release env
+        id: versioning
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "PRERELEASE=false" >> $GITHUB_ENV
+            echo "SNAPSHOT=false" >> $GITHUB_ENV
+          else
+            echo "PRERELEASE=true" >> $GITHUB_ENV
+            echo "SNAPSHOT=true" >> $GITHUB_ENV
+          fi
+
+      - name: Build and publish snapshot
+        if: env.SNAPSHOT == 'true'
+        run: ./gradlew publish -Psnapshot=true -PrepositoryUrl=${{ secrets.SNAPSHOT_REPO_URL }}
+        env:
+          PRERELEASE: ${{ env.PRERELEASE }}
+          USERNAME: ${{ env.USERNAME }}
+          PASSWORD: ${{ env.PASSWORD }}
+
+      - name: Build and publish release (only for tags)
+        if: env.SNAPSHOT != 'true'
+        run: ./gradlew publish
+        env:
+          PRERELEASE: ${{ env.PRERELEASE }}
+          USERNAME: ${{ env.USERNAME }}
+          PASSWORD: ${{ env.PASSWORD }}
