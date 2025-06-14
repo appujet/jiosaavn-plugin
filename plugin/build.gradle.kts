@@ -97,7 +97,7 @@ githubRelease {
     repo("jiosaavn-plugin")
     targetCommitish(System.getenv("RELEASE_TARGET"))
     releaseAssets(tasks.shadowJar.get().outputs.files.toList())
-    tagName(verName)
+    tagName("v$verName")
     releaseName(verName)
     overwrite(false)
     prerelease(preRelease)
