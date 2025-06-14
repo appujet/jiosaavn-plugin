@@ -63,28 +63,30 @@ data class Version(val major: Int, val minor: Int, val patch: Int) {
 }
 
 
-publishing {
-    repositories {
-        maven {
-            url = if (preRelease) {
-                uri("https://maven.lavalink.dev/snapshots")
-            } else {
-                uri("https://maven.lavalink.dev/releases")
-            }
-            credentials {
-                username = System.getenv("USERNAME")
-                password = System.getenv("PASSWORD")
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
+if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
+    publishing {
+        repositories {
+            maven {
+                url = if (preRelease) {
+                    uri("https://maven.lavalink.dev/snapshots")
+                } else {
+                    uri("https://maven.lavalink.dev/releases")
+                }
+                credentials {
+                    username = System.getenv("USERNAME")
+                    password = System.getenv("PASSWORD")
+                }
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
             }
         }
-    }
 
-    publications {
-        create<MavenPublication>("jiosaavn-plugin") {
-            artifactId = "jiosaavn-plugin"
-            from(components["java"])
+        publications {
+            create<MavenPublication>("jiosaavn-plugin") {
+                artifactId = "jiosaavn-plugin"
+                from(components["java"])
+            }
         }
     }
 }
