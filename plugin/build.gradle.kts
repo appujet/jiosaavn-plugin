@@ -19,7 +19,6 @@ lavalinkPlugin {
     name = "jiosaavn-plugin"
     path = "$group.plugin"
     version = verName
-    // Assuming libs and versions are defined elsewhere
     apiVersion = libs.versions.lavalink.api
     serverVersion = libs.versions.lavalink.server
     configurePublishing = false
@@ -38,7 +37,9 @@ tasks {
         archiveBaseName.set(archivesBaseName)
     }
     shadowJar {
-        archiveFileName.set("$verName.jar")
+        archiveBaseName.set(archivesBaseName)
+        archiveVersion.set(verName)
+        archiveClassifier.set("")
         configurations = listOf(impl)
     }
     build {
