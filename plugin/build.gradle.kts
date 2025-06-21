@@ -84,7 +84,7 @@ if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
 
         publications {
             create<MavenPublication>("jiosaavn-plugin") {
-                artifactId = "jiosaavn-plugin"
+                artifactId = if (preRelease) commitSha else "jiosaavn-plugin"
                 from(components["java"])
             }
         }
