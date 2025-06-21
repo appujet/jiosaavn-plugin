@@ -14,7 +14,7 @@ lavalink:
   # plugins would go here, but they are auto-loaded when developing
   #  plugins:
   #    - dependency: "com.github.appujet:jiosaavn-plugin:VERSION"
-  #      repository: "https://jitpack.io"
+  #      repository: "https://maven.appujet.site/releases"
   server:
     password: "youshallnotpass"
     sources:

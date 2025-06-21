@@ -15,7 +15,7 @@ Replace `VERSION` with the latest release version.
 lavalink:
   plugins:
     - dependency: "com.github.appujet:jiosaavn-plugin:VERSION"
-      repository: "https://jitpack.io"
+      repository: "https://maven.appujet.site/releases"
 ```
 
 ## Configuration
