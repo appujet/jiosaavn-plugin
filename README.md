@@ -1,11 +1,7 @@
 # JioSaavn Plugin For Lavalink
 
 
-- This is a plugin for [Lavalink](https://github.com/lavalink-devs/Lavalink)
-- This plugin allows you to play songs from JioSaavn in your discord server.
-- This plugin uses the [JioSaavn API](https://github.com/appujet/jiosaavn-plugin-api) to fetch songs.
-- Special thanks to [topi314](https://github.com/topi314/LavaSrc) and [duncte123](https://github.com/duncte123) because most of the code for this plugin is based on [Lavasrc](https://github.com/topi314/LavaSrc) and [skybot-lavalink-plugin](https://github.com/DuncteBot/skybot-lavalink-plugin).
-
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.appujet/jiosaavn-plugin.svg)](https://search.maven.org/artifact/com.github.appujet/jiosaavn-plugin)
 ## Lavalink Usage
 To install this plugin either download the latest release and place it into your plugins folder or add the following into your application.yml
 Replace `VERSION` with the latest release version.
@@ -107,3 +103,12 @@ logging:
 ## How to get API URL ?
 
 - You can host the api locally using [this guide](https://github.com/appujet/jiosaavn-plugin-api)
+
+
+
+## Special Thanks
+
+- This is a plugin for [Lavalink](https://github.com/lavalink-devs/Lavalink)
+- This plugin allows you to play songs from JioSaavn in your discord server.
+- This plugin uses the [JioSaavn API](https://github.com/appujet/jiosaavn-plugin-api) to fetch songs.
+- Special thanks to [topi314](https://github.com/topi314/LavaSrc) and [duncte123](https://github.com/duncte123) because most of the code for this plugin is based on [Lavasrc](https://github.com/topi314/LavaSrc) and [skybot-lavalink-plugin](https://github.com/DuncteBot/skybot-lavalink-plugin).

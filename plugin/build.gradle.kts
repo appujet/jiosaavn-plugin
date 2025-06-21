@@ -43,7 +43,6 @@ tasks {
             "$verName.jar"
         }
         archiveFileName.set(jarFileName)
-        archiveClassifier.set("")
         configurations = listOf(impl)
     }
     build {
