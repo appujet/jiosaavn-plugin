@@ -68,9 +68,9 @@ if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
         repositories {
             maven {
                 url = if (preRelease) {
-                    uri("https://maven.lavalink.dev/snapshots")
+                    uri("https://maven.appujet.site/snapshots")
                 } else {
-                    uri("https://maven.lavalink.dev/releases")
+                    uri("https://maven.appujet.site/releases")
                 }
                 credentials {
                     username = System.getenv("USERNAME")
@@ -109,7 +109,7 @@ githubRelease {
             |lavalink:
             |    plugins:
             |        - dependency: "com.github.appujet:jiosaavn-plugin:$verName"
-            |          repository: https://jitpack.io
+            |          repository: https://maven.appujet.site/snapshots
             |```
         """.trimMargin())
     } else {
