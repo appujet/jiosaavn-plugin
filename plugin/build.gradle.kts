@@ -24,7 +24,6 @@ lavalinkPlugin {
     configurePublishing = false
 }
 
-
 dependencies {
     implementation(projects.main)
 }
@@ -49,11 +48,11 @@ tasks {
     }
     publish {
         dependsOn(publishToMavenLocal)
+        dependsOn(shadowJar) // Ensure shadowJar runs before publish
     }
 }
 
 tasks.githubRelease {
-    dependsOn(tasks.jar)
     dependsOn(tasks.shadowJar)
     mustRunAfter(tasks.shadowJar)
 }
@@ -61,7 +60,6 @@ tasks.githubRelease {
 data class Version(val major: Int, val minor: Int, val patch: Int) {
     override fun toString() = "$major.$minor.$patch"
 }
-
 
 if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
     publishing {
@@ -86,6 +84,7 @@ if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
             create<MavenPublication>("jiosaavn-plugin") {
                 artifactId = "jiosaavn-plugin"
                 version = verName
+               
                 artifact(tasks.shadowJar.get()) {
                     builtBy(tasks.shadowJar)
                 }
