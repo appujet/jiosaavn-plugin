@@ -24,7 +24,6 @@ lavalinkPlugin {
     configurePublishing = false
 }
 
-
 dependencies {
     implementation(projects.main)
 }
@@ -37,7 +36,9 @@ tasks {
         archiveBaseName.set(archivesBaseName)
     }
     shadowJar {
-        archiveFileName.set("$verName.jar")
+        archiveBaseName.set(archivesBaseName)
+        archiveClassifier.set("") 
+        archiveVersion.set(verName)
         configurations = listOf(impl)
     }
     build {
@@ -59,7 +60,6 @@ tasks.githubRelease {
 data class Version(val major: Int, val minor: Int, val patch: Int) {
     override fun toString() = "$major.$minor.$patch"
 }
-
 
 if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
     publishing {
