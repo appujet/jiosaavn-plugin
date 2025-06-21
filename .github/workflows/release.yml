@@ -8,9 +8,9 @@ on:
         type: boolean
         default: false
         required: true
-#  push:
-#    branches:
-#      - master
+push:
+  branches:
+    - master
 
 jobs:
   build:
@@ -33,6 +33,8 @@ jobs:
       - name: Release to github
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          RELEASE_TARGET: ${{ github.sha }}
+          PRERELEASE: ${{ github.event.inputs.prerelease }}
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
         run: ./gradlew --no-daemon build publish githubRelease -x test

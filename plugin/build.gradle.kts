@@ -62,6 +62,7 @@ data class Version(val major: Int, val minor: Int, val patch: Int) {
     override fun toString() = "$major.$minor.$patch"
 }
 
+val commitSha = System.getenv("RELEASE_TARGET") ?: "local"
 
 if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
     publishing {

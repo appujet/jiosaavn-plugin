@@ -1,6 +1,5 @@
 # JioSaavn Plugin For Lavalink
 
-[![JitPack](https://jitpack.io/v/appujet/jiosaavn-plugin.svg)](https://jitpack.io/#appujet/jiosaavn-plugin)
 
 - This is a plugin for [Lavalink](https://github.com/lavalink-devs/Lavalink)
 - This plugin allows you to play songs from JioSaavn in your discord server.
