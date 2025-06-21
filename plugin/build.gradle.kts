@@ -37,12 +37,7 @@ tasks {
         archiveBaseName.set(archivesBaseName)
     }
     shadowJar {
-        val jarFileName = if (preRelease) {
-            "$archivesBaseName-$verName.jar"
-        } else {
-            "$verName.jar"
-        }
-        archiveFileName.set(jarFileName)
+        archiveFileName.set("$verName.jar")
         configurations = listOf(impl)
     }
     build {
