@@ -24,6 +24,7 @@ lavalinkPlugin {
     configurePublishing = false
 }
 
+
 dependencies {
     implementation(projects.main)
 }
@@ -36,8 +37,12 @@ tasks {
         archiveBaseName.set(archivesBaseName)
     }
     shadowJar {
-        archiveBaseName.set(archivesBaseName)
-        archiveVersion.set(verName)
+        val jarFileName = if (preRelease) {
+            "$archivesBaseName-$verName.jar"
+        } else {
+            "$verName.jar"
+        }
+        archiveFileName.set(jarFileName)
         archiveClassifier.set("")
         configurations = listOf(impl)
     }
@@ -48,11 +53,11 @@ tasks {
     }
     publish {
         dependsOn(publishToMavenLocal)
-        dependsOn(shadowJar)
     }
 }
 
 tasks.githubRelease {
+    dependsOn(tasks.jar)
     dependsOn(tasks.shadowJar)
     mustRunAfter(tasks.shadowJar)
 }
@@ -60,6 +65,7 @@ tasks.githubRelease {
 data class Version(val major: Int, val minor: Int, val patch: Int) {
     override fun toString() = "$major.$minor.$patch"
 }
+
 
 if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
     publishing {
@@ -84,29 +90,11 @@ if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
             create<MavenPublication>("jiosaavn-plugin") {
                 artifactId = "jiosaavn-plugin"
                 version = verName
-                groupId = project.group.toString()
-                
                 artifact(tasks.shadowJar.get()) {
                     builtBy(tasks.shadowJar)
                 }
-                
-   
-                pom {
-                    name.set("jiosaavn-plugin")
-                    description.set("JioSaavn plugin for Lavalink")
-                }
             }
         }
-    }
-    
-    tasks.withType<PublishToMavenRepository> {
-        dependsOn(tasks.shadowJar)
-        mustRunAfter(tasks.shadowJar)
-    }
-    
-    tasks.withType<PublishToMavenLocal> {
-        dependsOn(tasks.shadowJar)
-        mustRunAfter(tasks.shadowJar)
     }
 }
 
