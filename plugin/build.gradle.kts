@@ -5,14 +5,15 @@ plugins {
     id("com.github.johnrengelman.shadow")
     id("com.github.breadmoirai.github-release")
 }
-val pluginVersion = findProperty("version")
+
+val pluginVersion = findProperty("version") as String?
+val commitSha = System.getenv("GITHUB_SHA")?.take(7) ?: "unknown"
+val preRelease = System.getenv("PRERELEASE") == "true"
+val verName = if (preRelease) commitSha else pluginVersion!!
 
 group = "com.github.appujet"
-version = pluginVersion!!
+version = verName
 val archivesBaseName = "jiosaavn-plugin"
-val preRelease = System.getenv("PRERELEASE") == "true"
-val verName = "${if (preRelease) "PRE_" else ""}$pluginVersion${if(preRelease) "_${System.getenv("GITHUB_RUN_NUMBER")}" else ""}"
-
 
 lavalinkPlugin {
     name = "jiosaavn-plugin"
@@ -37,9 +38,7 @@ tasks {
         archiveBaseName.set(archivesBaseName)
     }
     shadowJar {
-        archiveBaseName.set(archivesBaseName)
-        archiveClassifier.set("")
-
+        archiveFileName.set("$verName.jar")
         configurations = listOf(impl)
     }
     build {
@@ -62,7 +61,6 @@ data class Version(val major: Int, val minor: Int, val patch: Int) {
     override fun toString() = "$major.$minor.$patch"
 }
 
-val commitSha = System.getenv("RELEASE_TARGET") ?: "local"
 
 if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
     publishing {
@@ -85,8 +83,11 @@ if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
 
         publications {
             create<MavenPublication>("jiosaavn-plugin") {
-                artifactId = if (preRelease) commitSha else "jiosaavn-plugin"
-                from(components["java"])
+                artifactId = "jiosaavn-plugin"
+                version = verName
+                artifact(tasks.shadowJar.get()) {
+                    builtBy(tasks.shadowJar)
+                }
             }
         }
     }
