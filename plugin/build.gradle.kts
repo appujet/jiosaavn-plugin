@@ -34,10 +34,11 @@ impl.isCanBeResolved = true
 tasks {
     jar {
         archiveBaseName.set(archivesBaseName)
+        enabled = false
     }
     shadowJar {
         archiveBaseName.set(archivesBaseName)
-        archiveClassifier.set("") 
+        archiveClassifier.set("")
         archiveVersion.set(verName)
         configurations = listOf(impl)
     }
@@ -48,11 +49,11 @@ tasks {
     }
     publish {
         dependsOn(publishToMavenLocal)
+        dependsOn(shadowJar)
     }
 }
 
 tasks.githubRelease {
-    dependsOn(tasks.jar)
     dependsOn(tasks.shadowJar)
     mustRunAfter(tasks.shadowJar)
 }
@@ -84,8 +85,9 @@ if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
             create<MavenPublication>("jiosaavn-plugin") {
                 artifactId = "jiosaavn-plugin"
                 version = verName
-                artifact(tasks.shadowJar.get()) {
-                    builtBy(tasks.shadowJar)
+                artifact(tasks.shadowJar.get())
+                pom {
+                    packaging = "jar"
                 }
             }
         }

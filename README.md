@@ -3,7 +3,7 @@
 
 ## Lavalink Usage
 To install this plugin either download the latest release and place it into your plugins folder or add the following into your application.yml
-Replace `VERSION` with the latest release version.[![Maven Central](https://img.shields.io/maven-central/v/com.github.appujet/jiosaavn-plugin?versionPrefix=2)](https://central.sonatype.com/artifact/com.github.appujet/jiosaavn-plugin)
+Replace `VERSION` with the latest release version.[![Maven](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.appujet.site%2Freleases%2Fcom%2Fgithub%2Fappujet%2Fjiosaavn-plugin%2Fmaven-metadata.xml)](https://maven.appujet.site/#/releases/com/github/appujet/jiosaavn-plugin)
 
 ```yaml
 lavalink:
