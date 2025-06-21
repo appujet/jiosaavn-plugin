@@ -48,7 +48,7 @@ tasks {
     }
     publish {
         dependsOn(publishToMavenLocal)
-        dependsOn(shadowJar) // Ensure shadowJar runs before publish
+        dependsOn(shadowJar)
     }
 }
 
@@ -84,12 +84,29 @@ if (System.getenv("USERNAME") != null && System.getenv("PASSWORD") != null) {
             create<MavenPublication>("jiosaavn-plugin") {
                 artifactId = "jiosaavn-plugin"
                 version = verName
-               
+                groupId = project.group.toString()
+                
                 artifact(tasks.shadowJar.get()) {
                     builtBy(tasks.shadowJar)
                 }
+                
+   
+                pom {
+                    name.set("jiosaavn-plugin")
+                    description.set("JioSaavn plugin for Lavalink")
+                }
             }
         }
+    }
+    
+    tasks.withType<PublishToMavenRepository> {
+        dependsOn(tasks.shadowJar)
+        mustRunAfter(tasks.shadowJar)
+    }
+    
+    tasks.withType<PublishToMavenLocal> {
+        dependsOn(tasks.shadowJar)
+        mustRunAfter(tasks.shadowJar)
     }
 }
 
